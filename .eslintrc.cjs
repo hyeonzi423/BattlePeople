@@ -1,18 +1,38 @@
 module.exports = {
-  root: true,
-  env: { browser: true, es2020: true },
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react-hooks/recommended',
-  ],
-  ignorePatterns: ['dist', '.eslintrc.cjs'],
-  parser: '@typescript-eslint/parser',
-  plugins: ['react-refresh'],
-  rules: {
-    'react-refresh/only-export-components': [
-      'warn',
-      { allowConstantExport: true },
-    ],
-  },
-}
+	root: true,
+	env: { browser: true, es2020: true },
+	extends: [
+		"airbnb",
+		"airbnb/hooks",
+		"airbnb-typescript",
+		"plugin:@typescript-eslint/recommended",
+		"prettier",
+		"prettier/prettier",
+		"plugin:prettier/recommended",
+	],
+	// ignorePatterns: ['dist', '.eslintrc.cjs'],
+	parser: "@typescript-eslint/parser",
+	parserOptions: {
+		ecmaFeatures: {
+			jsx: true,
+		},
+		ecmaVersion: "latest",
+		sourceType: "module",
+		project: "./tsconfig.json",
+	},
+	plugins: ["react-refresh", "@typescript-eslint"],
+	rules: {
+		"no-shadow": 0,
+		"import/no-extraneous-dependencies": 0,
+		"react/react-in-jsx-scope": 0,
+		"react/jsx-filename-extension": [1, { extensions: [".tsx", ".jsx"] }],
+		"import/extensions": 0,
+		"@typescript-eslint/no-shadow": 0,
+		"import/no-absolute-path": 0,
+	},
+	settings: {
+		"import/resolver": {
+			typescript: {},
+		},
+	},
+};
