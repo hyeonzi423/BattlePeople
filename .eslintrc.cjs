@@ -10,7 +10,7 @@ module.exports = {
 		"prettier/prettier",
 		"plugin:prettier/recommended",
 	],
-	ignorePatterns: ['dist', '.eslintrc.cjs', '/*.js'],
+	ignorePatterns: ['dist', '/*.*'],
 	parser: "@typescript-eslint/parser",
 	parserOptions: {
 		ecmaFeatures: {
