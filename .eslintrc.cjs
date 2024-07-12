@@ -29,6 +29,7 @@ module.exports = {
 		"import/extensions": 0,
 		"@typescript-eslint/no-shadow": 0,
 		"import/no-absolute-path": 0,
+		"import/prefer-default-export": 0,
 	},
 	settings: {
 		"import/resolver": {
