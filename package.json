@@ -9,7 +9,18 @@
     "lint": "eslint . --ext ts,tsx,js,jsx --report-unused-disable-directives",
     "lint:fix": "eslint . --ext ts,tsx,js,jsx --report-unused-disable-directives --fix",
     "preview": "vite preview",
-    "test": "vitest --globals --reporter verbose"
+    "test": "vitest run --globals --reporter verbose",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "dependencies": {
     "eslint-import-resolver-typescript": "^3.6.1",
@@ -44,7 +55,9 @@
     "eslint-plugin-react": "^7.34.3",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.7",
+    "husky": "^9.0.11",
     "jsdom": "^24.1.0",
+    "lint-staged": "^15.2.7",
     "msw": "^2.3.1",
     "postcss": "^8.4.39",
     "prettier": "^3.3.2",
