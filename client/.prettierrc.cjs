@@ -5,5 +5,6 @@ module.exports = {
   "tabWidth": 2,
   "trailingComma": "all",
   "useTabs": true,
-  "printWidth": 80
+  "printWidth": 80,
+  "endOfLine": "auto",
 }
