@@ -33,5 +33,10 @@ out/
 /nbdist/
 /.nb-gradle/
 
+
+### secret key ###
+*.properties
+
+
 ### VS Code ###
 .vscode/
