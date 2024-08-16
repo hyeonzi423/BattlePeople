@@ -1,0 +1,165 @@
+pipeline {
+    agent any
+    environment {
+        HOST_GRADLE_HOME = "/home/ubuntu/.gradle"
+        DOCKER_GRADLE_HOME = "/.gradle"
+        HOST_JENKINS_HOME = "/home/ubuntu/jenkins_home"
+        DOCKER_JENKINS_HOME = "/var/jenkins_home"
+        DOCKER_IMAGE = "eclipse-temurin:17.0.11_9-jdk-jammy"
+        GIT_REPO_URL = "${env.gitlabSourceRepoHttpUrl ?: 'https://lab.ssafy.com/s11-webmobile1-sub2/S11P12A706.git'}"
+        GIT_BRANCH = getGitBranch()
+        WORK_DIR = "battle-people-server"
+        MATTERMOST_WEBHOOK_CREDENTIAL_ID = "mattermost-webhook"
+    }
+    post {
+        failure {
+            updateGitlabCommitStatus name: 'pipeline', state: 'failed'
+        }
+        success {
+            updateGitlabCommitStatus name: 'pipeline', state: 'success'
+            script {
+                def branchName = GIT_BRANCH.replaceAll('/', '_') // 슬래시를 언더스코어로 치환
+                def targetDir = "${env.DOCKER_JENKINS_HOME}/artifacts/${env.JOB_NAME}/${branchName}"
+                sh "mkdir -p ${targetDir}"
+                sh "cp battle-people-server/build/libs/*.jar ${targetDir}/"
+                archiveArtifacts artifacts: 'battle-people-server/build/libs/*.jar', allowEmptyArchive: true
+                
+                if (GIT_BRANCH == "develop/server") {
+                    sendMattermostNotification("deploy server develop_server")
+                }
+                // junit 'battle-people-server/build/test-results/test/*.xml'
+            }
+        }
+        aborted {
+            updateGitlabCommitStatus name: 'pipeline', state: 'skipped'
+        }
+    }
+    options {
+        gitLabConnection('BattlePeople')
+        gitlabBuilds(builds: ['pipeline', 'lint', 'test', 'build'])
+    }
+    triggers {
+        gitlab(
+            triggerOnPush: true, 
+            triggerOnMergeRequest: true, 
+            branchFilterType: 'RegexBasedFilter', 
+            targetBranchRegex: '(main|develop)/server', 
+            secretToken: '72bca946ae9a05ebe54616db457e115a',
+            triggerOnAcceptedMergeRequest: true,
+            triggerOpenMergeRequestOnPush: "source",
+        )
+    }
+    stages {
+        stage('Pending') {
+            steps {
+                script {
+                    if (env.gitlabMergeRequestState in ['closed']) {
+                        currentBuild.result = 'ABORTED'
+                        error("Merge Request is in state '${env.gitlabMergeRequestState}'. Aborting pipeline.")
+                    }
+                    env.HOST_WORKSPACE = env.WORKSPACE.replace(env.DOCKER_JENKINS_HOME, env.HOST_JENKINS_HOME)
+                    echo "New WORKSPACE path: ${env.HOST_WORKSPACE}"
+                    updateGitlabCommitStatus name: 'pipeline', state: 'pending'
+                }
+            }
+        }
+        stage('checkout') {
+            steps {
+                script {
+                    checkoutCode()
+                    def filePath = "${WORK_DIR}/src/main/resources/application.properties"
+                    if (fileExists(filePath)) {
+                        echo "File exists. Changing permissions and deleting the file."
+
+                        // 권한 변경
+                        sh "chmod +w ${filePath}"
+                        
+                        // 파일 삭제
+                        sh "rm ${filePath}"
+                        
+                        echo "File deleted successfully."
+                    }
+                    withCredentials([file(credentialsId: 'application.properties.build', variable: 'APPLICATION_PROPERTIES')]) {
+                        // 환경 변수로 지정된 파일 경로를 사용하여 application.properties 복사
+                        sh """
+                            mkdir -p \$WORK_DIR/src/main/resources
+                            cp \$APPLICATION_PROPERTIES \$WORK_DIR/src/main/resources/application.properties
+                        """
+                    }
+                }
+            }
+        }
+        stage('lint') {
+            steps {
+                executeStage('lint', 'sh ./gradlew checkStyleMain')
+            }
+        }
+        stage('test') {
+            steps {
+                executeStage('test', 'sh ./gradlew test')
+            }
+        }
+        stage('build') {
+            steps {
+                executeStage('build', 'sh ./gradlew bootJar')
+            }
+        }
+        stage('Report Status to GitLab') {
+            steps {
+                script {
+                    def status = currentBuild.currentResult == 'SUCCESS' ? 'success': 'failed'
+                    updateGitlabCommitStatus name: 'pipeline', state: status
+                }
+            }
+        }
+    }
+}
+def getGitBranch() {
+    def sourceBranch = env.gitlabSourceBranch ?: 'develop/server'
+    def targetBranch = env.gitlabTargetBranch ?: 'develop/server'
+    return env.gitlabMergeRequestState == 'merged' ? targetBranch : sourceBranch
+}
+def checkoutCode() {
+    checkout changelog: false, poll: false, scm: [
+        $class: 'GitSCM',
+        branches: [[name: "${GIT_BRANCH}"]],
+        extensions: [],
+        userRemoteConfigs: [[credentialsId: 'personal_token', url: "${GIT_REPO_URL}"]]
+    ]
+}
+def executeStage(stageName, command) {
+    script {
+        try {
+            updateGitlabCommitStatus name: stageName, state: 'running'
+            runDockerCommand(command)
+            updateGitlabCommitStatus name: stageName, state: 'success'
+        } catch (Exception e) {
+            updateGitlabCommitStatus name: stageName, state: 'failed'
+            def mergeRequestUrl = env.gitlabMergeRequestUrl ?: 'N/A'
+            def errorMessage = """
+                Stage ${stageName} failed with error: ${e.message}
+                Build URL: ${env.BUILD_URL}
+                Job Name: ${env.JOB_NAME}
+                Build Number: ${env.BUILD_NUMBER}
+                Branch: ${GIT_BRANCH}
+                Merge Request URL: ${mergeRequestUrl}
+            """
+            sendMattermostNotification(errorMessage)
+            throw e
+        }
+    }
+}
+def runDockerCommand(command) {
+    sh """
+        docker run --rm -v ${HOST_GRADLE_HOME}:${DOCKER_GRADLE_HOME} -e GRADLE_USER_HOME=${DOCKER_GRADLE_HOME} -v ${env.HOST_WORKSPACE}:/workspace -w /workspace/${env.WORK_DIR} ${env.DOCKER_IMAGE} ${command}
+    """
+}
+def sendMattermostNotification(message) {
+    withCredentials([string(credentialsId: env.MATTERMOST_WEBHOOK_CREDENTIAL_ID, variable: 'WEBHOOK_URL')]) {
+        sh """
+        curl -X POST -H 'Content-Type: application/json' -d '{
+            "text": "${message.replaceAll('"', '\\"')}"
+        }' ${WEBHOOK_URL}
+        """
+    }
+}
