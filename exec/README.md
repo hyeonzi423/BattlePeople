@@ -1,11 +1,28 @@
 JDK: eclipse-temurin:17.0.11_9-jdk
 
+## DB 덤프 파일
+
+- [data.sql](./mysql/data.sql)
+
+## 사용중인 외부 서비스
+
+- OpenAI DALL·E API
+
+## 설정 정보 파일 목록
+
+- [백엔드 설정 파일](./backend/application.properties)
+- [백엔드 설정 환경변수](./backend/.env)
+- [openvidu 환경변수](./.env.openvidu)
+- [mysql 계정 설정 파일](./mysql/init.sql)
+- [도메인 인증서](./cert)
+
 ## 필수 환경변수
 
 - OpenAI DALL·E 사용을 위한 API 키 (backend/.env 파일에 설정)
 - (도메인 변경 시)
   - backend/.env의 OPENVIDU_URL
   - .env.openvidu의 DOMAIN_OR_PUBLIC_IP
+  - SSL 인증서 변경(cert 폴더에서 certificate.cert, certificate.key 변경)
 
 ## 필수 파일
 
