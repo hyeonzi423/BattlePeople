@@ -1,0 +1,4 @@
+사용자 투표 내역
+1. user_vote_opinion 테이블
+2. user_id로 select and count
+3. 

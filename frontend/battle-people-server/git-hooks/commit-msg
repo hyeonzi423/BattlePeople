@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# Define the allowed types and pattern
+type_pattern='(Feat|Fix|Hot-Fix|Design|Docs|Style|Refactor|Test|Chore|Revert|Rename|Remove)'
+pattern="^${type_pattern}: .+"
+
+# Define colors
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+# Read the commit message from the file
+commit_message=$(<"$1")
+
+# Function to print usage information in red
+print_usage() {
+    printf "${RED}Error: Commit message does not follow the required format.${NC}\n"
+    printf "\n"
+    printf "${RED}Commit message should match the following pattern:${NC}\n"
+    printf "\"<type>: <description>\"\n"
+    printf "\n"
+    printf "${RED}Where <type> must be one of the following:${NC}\n"
+    printf "  - Feat: A new feature\n"
+    printf "  - Fix: A bug fix\n"
+    printf "  - Hot-Fix: A hot fix\n"
+    printf "  - Design: Design changes\n"
+    printf "  - Docs: Documentation changes\n"
+    printf "  - Style: Code style changes\n"
+    printf "  - Refactor: Code refactoring\n"
+    printf "  - Test: Tests\n"
+    printf "  - Chore: Chores or maintenance tasks\n"
+    printf "  - Revert: Reverts a previous commit\n"
+    printf "  - Rename: Renaming files or functions\n"
+    printf "  - Remove: Removing files or functions\n"
+    printf "\n"
+    printf "${RED}Example commit messages:${NC}\n"
+    printf "  - Feat: Add new user authentication\n"
+    printf "  - Fix: Correct typo in README\n"
+    printf "  - Remove: Delete deprecated API\n"
+    exit 1
+}
+
+# Check if the commit message matches the pattern
+if ! echo "$commit_message" | grep -qE "$pattern"; then
+    print_usage
+fi

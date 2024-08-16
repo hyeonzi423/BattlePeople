@@ -1,0 +1,17 @@
+
+	@Secured("ROLE_ADMIN")
+	@GetMapping("/test")
+	public ResponseEntity<?> test(@CookieValue(name = "access") String access, HttpServletRequest request) {
+		System.out.println(SecurityContextHolder.getContext().getAuthentication().toString());
+		System.out.println("test");
+		return ResponseEntity.ok(new APIResponseDto<>("success", "test", null));
+	}
+
+
+	@GetMapping("/refresh")
+	public String getRefreshCookie(@CookieValue(name = "refresh") String refreshToken) {
+		if (refreshToken == null) {
+			return "No refresh token found";
+		}
+		return "Refresh Token: " + refreshToken;
+	}

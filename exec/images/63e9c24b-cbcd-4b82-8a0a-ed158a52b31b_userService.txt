@@ -1,0 +1,23 @@
+	private final String uploadDir = "C:/Users/SSAFY/Desktop/userProfile"; // 업로드 디렉토리 설정
+
+	public User updateUserProfile(Long userId, UpdateRequest updateRequest, MultipartFile profileImage) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+		user.setNickname(updateRequest.getNickname());
+
+		if (profileImage != null && !profileImage.isEmpty()) {
+			try {
+				// 이미지 파일을 저장하고 경로를 설정합니다.
+				String fileName = UUID.randomUUID().toString() + "_" + profileImage.getOriginalFilename();
+				Path path = Paths.get(uploadDir, fileName);
+				Files.write(path, profileImage.getBytes());
+				user.setImgUrl("/userProfile/" + fileName); // 이미지 URL을 저장합니다.
+			} catch (IOException e) {
+				throw new RuntimeException("Failed to save profile image", e);
+			}
+		}
+
+		return userRepository.save(user);
+	}
+

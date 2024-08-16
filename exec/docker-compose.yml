@@ -1,0 +1,61 @@
+services:
+  nginx:
+    image: nginx
+    container_name: nginx
+    restart: always
+    ports:
+      # openvidu nginx 설정은 localhost:5442로 일반 트래픽 전송
+      - "127.0.0.1:5442:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./frontend/build:/usr/share/nginx/html:ro
+      - ./images:/static/images:ro
+    networks:
+      - rabbits
+
+  backend:
+    image: eclipse-temurin:17.0.11_9-jdk-jammy
+    container_name: backend
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      - SPRING_CONFIG_LOCATION=/app/application.properties
+    volumes:
+      - ./backend/build/battlepeople.jar:/app/app.jar:ro
+      - ./backend/application.properties:/app/application.properties
+      - ./images:/static/images:rw
+    env_file:
+      - backend/.env
+    working_dir: /app
+    networks:
+      - rabbits
+    entrypoint: ["sh", "-c", "java -jar $(ls *.jar | head -n 1)"]
+
+  mysql:
+    image: mysql:8.0.33
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: VhGjVihJtfVUzhsT7m8y
+      MYSQL_DATABASE: battlepeople
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./mysql/data.sql:/docker-entrypoint-initdb.d/initdata.sql
+    networks:
+      - rabbits
+
+  redis:
+    image: redis
+    container_name: redis
+    restart: always
+    networks:
+      - rabbits
+
+networks:
+  rabbits:
+    driver: bridge
+
+volumes:
+  mysql_data:

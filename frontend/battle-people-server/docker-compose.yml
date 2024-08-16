@@ -1,0 +1,68 @@
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+
+  # kurento:
+  #   image: kurento/kurento-media-server:latest
+  #   container_name: kurento
+  #   restart: always
+  #   environment:
+  #     - KMS_MIN_PORT=40000
+  #     - KMS_MAX_PORT=57000
+
+  # openvidu:
+  #   image: openvidu/openvidu-server-kms:latest
+  #   container_name: openvidu
+  #   restart: always
+  #   environment:
+  #     - OPENVIDU_SECRET=DEVELOPONLYSECRET
+  #     - OPENVIDU_CDR=true
+  #     - OPENVIDU_RECORDING=true
+  #     - OPENVIDU_RECORDING_PATH=/opt/openvidu/recordings
+  #     - KMS_URI=ws://kurento:8888/kurento
+  #     - OPENVIDU_STREAMS_ALLOW_TRANSCODING=false # SFU = false, MCU = true
+  #   ports:
+  #     - "4443:4443"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   depends_on:
+  #     - kurento
+
+  #  backend:
+  #    image: i11a706.p.ssafy.io:5000/backend:${TAG:-develop-server}
+  #    container_name: backend
+  #    restart: on-failure
+  #    depends_on:
+  #      - mysql
+  #    ports:
+  #      - "8080:8080" # backend 서비스가 사용하는 포트
+
+  mysql:
+    image: mysql:8.0.33
+    container_name: mysql
+    restart: on-failure
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: on-failure
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysql-data:

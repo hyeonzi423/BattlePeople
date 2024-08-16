@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# Define colors
+RED='\033[0;31;1m'
+GREEN='\033[0;32;1m'
+NO_COLOR='\033[0m'
+
+# Define paths
+PROJECT_DIR="$(git rev-parse --show-toplevel)/battle-people-server"
+CHECKSTYLE_PATH="${PROJECT_DIR}/build/reports/checkstyle/main.html"
+
+# Change to project directory
+cd "$PROJECT_DIR" || {
+    echo "${RED}Error: Unable to change to project directory ${PROJECT_DIR}.${NO_COLOR}"
+    exit 1
+}
+
+# Run Checkstyle
+echo "----------------- Starting Checkstyle -----------------"
+./gradlew checkstyleMain > /dev/null
+CHECKSTYLE_STATUS=$?
+
+# Check Checkstyle results
+if [ $CHECKSTYLE_STATUS -ne 0 ]; then
+    echo "${RED}Failed: Checkstyle issues detected!${NO_COLOR}"
+    echo "Please review the issues at: file://${CHECKSTYLE_PATH}"
+    # Open Checkstyle report (customize command based on your OS)
+    if command -v xdg-open >/dev/null 2>&1; then
+        xdg-open "${CHECKSTYLE_PATH}" >/dev/null 2>&1
+    elif command -v open >/dev/null 2>&1; then
+        open "${CHECKSTYLE_PATH}" >/dev/null 2>&1
+    else
+        echo "Cannot automatically open the report. Please open the file manually: ${CHECKSTYLE_PATH}"
+    fi
+    exit $CHECKSTYLE_STATUS
+fi
+
+echo "${GREEN}Success: No Checkstyle issues found.${NO_COLOR}"
+echo "----------------- Checkstyle Completed -----------------"

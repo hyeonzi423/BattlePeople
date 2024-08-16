@@ -1,0 +1,260 @@
+/* MyPage 관련 CSS */
+.mypage-container {
+	margin-top: 70px; /* 헤더 아래로 배치 */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px;
+	width: 90%; /* 너비를 더 넓게 설정 */
+	max-width: 1200px; /* 최대 너비 설정 */
+	margin-left: auto; /* 가운데 정렬 */
+	margin-right: auto; /* 가운데 정렬 */
+	margin-bottom: 70px; /* 상단과 동일한 패딩 */
+}
+
+.mypage-header,
+.mypage-nav {
+	width: 100%; /* container의 폭과 일치 */
+	margin-left: auto; /* 가운데 정렬 */
+	margin-right: auto; /* 가운데 정렬 */
+}
+
+.mypage-content {
+	width: 100%;
+	height: 300px;
+}
+
+.mypage-header {
+	display: flex;
+	width: 100%;
+	max-width: 800px;
+	margin-bottom: 20px;
+	justify-content: center;
+}
+
+/* 왼쪽 섹션 (프로필 + 티어) */
+.left-section {
+	/* border: 2px solid red; */
+	width: 70%;
+	justify-content: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+/* 오른쪽 섹션 (인적사항) */
+.right-section {
+	/* border: 2px solid red; */
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	width: 100%; /* 너비를 늘림 */
+	justify-content: center; /* 세로 기준 가운데 정렬 */
+}
+
+.profile-section {
+	margin-top: 70px;
+	margin-bottom: 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.profile-img-container {
+	position: relative;
+	width: 150px;
+	height: 150px;
+}
+
+/* 프로필 이미지 스타일 */
+.profile-img {
+	width: 150px;
+	height: 150px;
+	border-radius: 50%;
+	border: 4px solid #1D3D6B; /* 테두리 색상 */
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-img.darken {
+	filter: brightness(0.5);
+}
+
+.edit-icon {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 50px;
+	height: 50px;
+	opacity: 1;
+}
+
+
+.tier-section {
+	width: 100%;
+	text-align: center;
+	margin-top: 20px;
+	margin-bottom: 20px; /* 버튼 그룹과 간격 추가 */
+}
+
+.tier-label {
+	display: block;
+	font-weight: bold;
+	color: #1D3D6B;
+}
+
+.tier-bar {
+	width: 100%; /* tier-bar의 너비 설정 */
+	height: 20px;
+	background-color: #e0e0e0;
+	border-radius: 10px;
+	overflow: hidden;
+	margin-top: 5px;
+}
+
+.tier-progress {
+	height: 100%;
+	background-color: #1D3D6B;
+	transition: width 0.3s ease-in-out; /* 애니메이션 추가 */
+}
+
+/* 인적사항 섹션 */
+.profile-info {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	width: 100%; /* 너비를 늘림 */
+}
+
+.profile-info label {
+	margin-top: 10px;
+	color: #1D3D6B;
+	display: flex;
+	align-items: center;
+}
+
+.profile-info input {
+	margin-top: 5px;
+	margin-bottom: 10px;
+	padding: 10px;
+	border: 2px solid #1D3D6B;
+	border-radius: 5px;
+	width: 100%;
+}
+
+.profile-info .edit-icon-small {
+	margin-left: 5px;
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+
+.input-with-error {
+    width: 100%;
+    position: relative;
+    padding-right: 110px; /* Save, Cancel 버튼 공간 확보 */
+    border: 2px solid #1D3D6B;
+    border-radius: 5px;
+    box-sizing: border-box;
+	height: 47.2px;
+}
+
+.input-with-error input {
+    width: 200px;
+    border: none;
+    padding: 10px;
+    box-sizing: border-box;
+	outline: none; /* 포커스 시에도 테두리가 나타나지 않도록 설정 */
+	margin: 0;
+}
+
+.nickname-edit-container {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	position: relative;
+}
+
+.nickname-edit-container input {
+	width: 100%; /* 입력 칸의 전체 너비 */
+	padding-right: 110px; /* 버튼 영역을 위한 패딩 */
+	border: none;
+	box-sizing: border-box;
+}
+
+.nickname-edit-buttons {
+    position: absolute;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.nickname-edit-buttons button {
+    margin-left: 5px;
+    padding: 5px 10px;
+    border: 3px solid #1D3D6B;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #1D3D6B;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	white-space: nowrap;
+}
+
+.save-btn {
+	background-color: #1D3D6B;
+	color: #fff;
+}
+
+.error-message {
+    position: absolute;
+    top: -20px;
+    right: 0;
+    color: red;
+    font-size: 10pt;
+}
+
+/* 버튼 그룹 스타일 */
+.button-group {
+	margin-top: 10px;
+	display: flex;
+	align-items: center;
+	width: 100%; /* profile-info와 동일한 너비 */
+}
+
+.save-btn {
+	margin-left: 10px; /* Edit 버튼과의 간격 */
+	padding: 10px 20px;
+	background-color: #1D3D6B;
+	color: #fff;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	width: 100%;
+}
+
+.edit-btn {
+	padding: 10px 20px;
+	background-color: #e0e0e0; /* 버튼 색상 */
+	color: #1D3D6B; /* 텍스트 색상 */
+	border: 2px solid #1D3D6B; /* 테두리 색상 */
+	border-radius: 5px;
+	cursor: pointer;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	width: 100%;
+}
+
+.check-btn {
+	margin-left: 5px;
+	padding: 8px 12px;
+	background-color: #1d3d6b;
+	color: #fff;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
