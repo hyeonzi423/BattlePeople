@@ -267,6 +267,8 @@ SPRING_DATASOURCE_PASSWORD="kevinhomealone"
 
 mysql/init.sql
 
+![erd](mysql/erd.png)
+
 ```sql
 CREATE DATABASE IF NOT EXISTS battlepeople;
 
