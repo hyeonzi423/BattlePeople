@@ -41,6 +41,27 @@ sh init.sh
 sh init.local.sh
 ```
 
+# 프로젝트 구성
+
+```bash
+project-root/
+├── backend/
+│   └── build/
+│   │   └── [backend JAR files]
+│   └── aplication.properties
+│   └── .env
+├── frontend/
+│   └── build/
+│       └── [frontend build files]
+├── mysql/
+│   └── init.sql
+│   └── data.sql
+├── nginx/
+│   └── nginx.conf
+└──docker-compose.yml
+```
+
+
 # Openvidu 구성
 
 ```bash
@@ -74,26 +95,6 @@ ls /opt/openvidu/owncert/
 ```bash
 cd /opt/openvidu
 docker compose up -d
-```
-
-# 프로젝트 구성
-
-```bash
-project-root/
-├── backend/
-│   └── build/
-│   │   └── [backend JAR files]
-│   └── aplication.properties
-│   └── .env
-├── frontend/
-│   └── build/
-│       └── [frontend build files]
-├── mysql/
-│   └── init.sql
-│   └── data.sql
-├── nginx/
-│   └── nginx.conf
-└──docker-compose.yml
 ```
 
 docker-compose.yml
